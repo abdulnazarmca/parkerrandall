@@ -5,7 +5,9 @@
             <field name="name">Purchase Orders Line</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">purchase.order.line</field>
+	    <field name="view_type">form</field>
             <field name="view_mode">tree</field>
+	    <field name="context">{'create': False}</field>
             <field name="help" type="html">
               <p class="o_view_nocontent_smiling_face">
                 Create a purchase order line
@@ -19,7 +21,9 @@
             <field name="name">Sale Orders Line</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">sale.order.line</field>
+	    <field name="view_type">form</field>
             <field name="view_mode">tree</field>
+	    <field name="context">{'create': False}</field>
             <field name="help" type="html">
               <p class="o_view_nocontent_smiling_face">
                 Create a sale order line
