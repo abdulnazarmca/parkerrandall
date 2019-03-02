@@ -1,24 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!--Purchase Order Line-->
+
         <record id="action_purchase_order_line" model="ir.actions.act_window">
-            <field name="name">Purchase Orders Line</field>
+            <field name="name">Purchase Order Line</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">purchase.order.line</field>
-	    <field name="view_type">form</field>
-            <field name="view_mode">tree</field>
-	    <field name="context">{'create': True}</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[]</field>
+            <field name="search_view_id" ref="purchase.purchase_order_line_search"/>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Create a purchase order line
+              </p>
+            </field>
         </record>
+
+
         <menuitem action="action_purchase_order_line" id="menu_purchase_order_line" parent="purchase.menu_procurement_management" sequence="100"/>
 
     <!--Sale Order Line-->
         <record id="action_sale_order_line" model="ir.actions.act_window">
-            <field name="name">Sale Orders Line1</field>
+            <field name="name">Sale Orders Line</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">sale.order.line</field>
 	    <field name="view_type">form</field>
             <field name="view_mode">tree</field>
-	    <field name="context">{'create': True}</field>
+	    <field name="context">{'create': False}</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Create a sale order line
+              </p>
+            </field>
         </record>
         <menuitem action="action_sale_order_line" id="menu_sale_order_line" parent="sale.sale_order_menu" sequence="100"/>
 </odoo>
