@@ -6,7 +6,13 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">purchase.order.line</field>
 	    <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">tree</field>
+	    <field name="context">{'create': True}</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Create a purchase order line
+              </p>
+            </field>
         </record>
         <menuitem action="action_purchase_order_line" id="menu_purchase_order_line" parent="purchase.menu_procurement_management" sequence="100"/>
 
@@ -16,7 +22,13 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">sale.order.line</field>
 	    <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">tree</field>
+	    <field name="context">{'create': True}</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Create a sale order line
+              </p>
+            </field>
         </record>
         <menuitem action="action_sale_order_line" id="menu_sale_order_line" parent="sale.sale_order_menu" sequence="100"/>
 </odoo>
