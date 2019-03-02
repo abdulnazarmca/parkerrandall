@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--Account Invoice form-->
+    <record id="invoice_form" model="ir.ui.view">
+        <field name="name">account.invoice.form.trading</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="before">
+                <field name="ec_short_description"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="invoice_supplier_form" model="ir.ui.view">
+        <field name="name">account.invoice.form.trading2</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_supplier_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="before">
+                <field name="ec_short_description"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!--Account Invoice tree-->
+    <record id="invoice_tree" model="ir.ui.view">
+        <field name="name">account.invoice.tree.inherit</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_invoice']" position="before">
+                <field name="ec_short_description"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="invoice_supplier_tree" model="ir.ui.view">
+        <field name="name">account.invoice.tree.inherit</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_supplier_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_invoice']" position="before">
+                <field name="ec_short_description"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
