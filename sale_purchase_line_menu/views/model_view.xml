@@ -39,7 +39,7 @@
 	    <field name="inherit_id" ref="sale.view_order_line_tree"/>
 	    <field name="arch" type="xml">
 	    	<xpath expr="//field[@name='order_id']" position="after">
-	            <field name="sale_order_id">
+	            <field name="sale_order_id"/>
 	    	</xpath>
 		<xpath expr="//tree[1]" position="attributes">
 	            <attribute name="create">true</attribute>
