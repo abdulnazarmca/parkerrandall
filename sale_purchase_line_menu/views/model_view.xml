@@ -45,15 +45,21 @@
     	</record>
 
         <record id="action_sale_order_line" model="ir.actions.act_window">
-            <field name="name">Sale Orders Line</field>
+            <field name="name">Sale Order Line</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">sale.order.line</field>
             <field name="view_mode">tree,form</field>
+            <field name="domain">[]</field>
+            <field name="search_view_id" ref="sale.view_sales_order_line_filter"/>
             <field name="help" type="html">
               <p class="o_view_nocontent_smiling_face">
                 Create a sale order line
               </p>
             </field>
         </record>
+
+
+
+
         <menuitem action="action_sale_order_line" id="menu_sale_order_line" parent="sale.sale_order_menu" sequence="100"/>
 </odoo>
