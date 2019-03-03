@@ -53,7 +53,7 @@
 	    <field name="inherit_id" ref="sale.sale_order_line_view_form_readonly"/>
 	    <field name="arch" type="xml">
 	    	<xpath expr="//field[@name='order_id']" position="after">
-	            <field name="sale_order_id">
+	            <field name="sale_order_id"/>
 	    	</xpath>
 	    </field>
     	</record>
