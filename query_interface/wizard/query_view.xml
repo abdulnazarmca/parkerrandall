@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+       <record id="view_query_interface" model="ir.ui.view">
+          <field name="name">Query Interface form</field>
+          <field name="model">query.interface</field>
+          <field name="arch" type="xml">
+            <form string="Query Interface"  version="7.0">
+		<field name="name"/>
+                <footer>
+			<button name="query_execute" string="Execute" type="object" class="oe_highlight"/>
+                    or
+                   	 <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+          </field>
+       </record>
+
+
+       <record id="action_query_interface" model="ir.actions.act_window">
+          <field name="name">Query Interface</field>
+          <field name="type">ir.actions.act_window</field>
+          <field name="res_model">query.interface</field>
+          <field name="view_type">form</field>
+          <field name="view_mode">form</field>
+          <field name="view_id" ref="view_query_interface"/>
+          <field name="target">new</field>
+       </record>
+
+
+        <menuitem action="action_query_interface" id="menu_query_interface" parent="base.menu_administration" name="Query Interface" sequence="1"/>
+
+
+</odoo>
