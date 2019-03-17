@@ -11,6 +11,7 @@ class Picking(models.Model):
         if self.set_effective_date:
             for move in self.move_lines:
                 for move_line in move.move_line_ids:move_line.date = self.scheduled_date
+                move.date = self.scheduled_date
                 
 
     set_effective_date = fields.Boolean(string='Set Scheduled Date as Effective Date', default=True, states={'done': [('readonly', True)], 'cancel': [('readonly', True)]})
@@ -22,6 +23,7 @@ class Picking(models.Model):
             self.write({'date_done': self.scheduled_date})
             for move in self.move_lines:
                 for move_line in move.move_line_ids:move_line.date = self.scheduled_date
+                move.date = self.scheduled_date
                 
                 
 
