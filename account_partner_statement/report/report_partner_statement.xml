@@ -49,8 +49,8 @@
 		    	</colgroup>
 		    	<thead>
 			    <tr style="border:1px solid black;width:100%;background-color:#0c7293;color:black">
-			    	<th class="text-center">S.No</th>
-			    	<th class="text-center">Reference</th>
+			    	<th class="text-center" style="color:red">S.No</th>
+			    	<th class="text-center" style="color:red">Reference</th>
 			    	<th class="text-center">Date</th>
 			    	<th class="text-center" >Journal</th>
 			    	<th class="text-center" >Status</th>
