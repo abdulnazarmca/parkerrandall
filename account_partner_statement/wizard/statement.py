@@ -150,7 +150,7 @@ class PartnerStatementWizard(models.TransientModel):
             amount = self.convert_rate(amount,payment.date,self.company_id.currency_id)
 
             info['content'] += [{
-                'name': payment.name,
+                'name': payment.move_id.name,
                 'journal_name': payment.journal_id.name,
                 'amount': amount,
                 'amount_currency': amount_currency,
@@ -194,4 +194,3 @@ class PartnerStatementWizard(models.TransientModel):
 
      
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-
