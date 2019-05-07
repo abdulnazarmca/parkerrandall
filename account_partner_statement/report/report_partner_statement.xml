@@ -48,7 +48,7 @@
 		    	    <col width='10%'/>
 		    	</colgroup>
 		    	<thead>
-			    <tr style="border:1px solid black;width:100%;background-color:#0c7293;">
+			    <tr style="border:1px solid black;width:100%;background-color:#0c7293;color:black">
 			    	<th class="text-center">S.No</th>
 			    	<th class="text-center">Reference</th>
 			    	<th class="text-center">Date</th>
@@ -130,7 +130,7 @@
 
 					    	    <td class="text-center"></td>
 					    	    <td class="text-center" t-att-style="style" ><span t-esc="move_line['name']" /></td>
-					    	    <td class="text-center" t-att-style="style"><span t-esc="move_line['date']"/></td>
+					    	    <td class="text-center" t-att-style="style"><span t-esc="move_line['date']" t-options="{'widget': 'date'}"/></td>
 					    	    <td class="text-center" t-att-style="style"><span t-esc="move_line['journal_name']" /></td>
 					    	    <td class="text-center"></td>
 					    	    <td class="text-right" t-att-style="style"><span t-if="move_line['amount_currency'] != 0" t-esc="move_line['amount_currency']" t-options='{"widget": "monetary", "display_currency": move_line["currency"]}'/></td>
@@ -174,7 +174,7 @@
 
 				    	    <td class="text-center"></td>
 				    	    <td class="text-center" t-att-style="style" ><span t-esc="payment['name']" /></td>
-				    	    <td class="text-center" t-att-style="style"><span t-esc="payment['date']"/></td>
+				    	    <td class="text-center" t-att-style="style"><span t-esc="payment['date']" t-options="{'widget': 'date'}"/></td>
 				    	    <td class="text-center" t-att-style="style"><span t-esc="payment['journal_name']" /></td>
 				    	    <td class="text-center"></td>
 				    	    <td class="text-right" t-att-style="style"><span t-if="payment['amount_currency'] != 0" t-esc="payment['amount_currency']" t-options='{"widget": "monetary", "display_currency": payment["currency"]}'/></td>
