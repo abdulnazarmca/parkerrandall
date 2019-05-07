@@ -48,16 +48,16 @@
 		    	    <col width='10%'/>
 		    	</colgroup>
 		    	<thead>
-			    <tr style="border:1px solid black;width:100%;background-color:#0c7293;color:black">
+			    <tr style="border:1px solid black;width:100%;background-color:#0c7293;">
 			    	<th class="text-center" style="color:red">S.No</th>
 			    	<th class="text-center" style="color:red">Reference</th>
-			    	<th class="text-center">Date</th>
-			    	<th class="text-center" >Journal</th>
-			    	<th class="text-center" >Status</th>
-			    	<th class="text-center">Amount Currency</th>
-			    	<th class="text-center">Invoice Amount</th>
-			    	<th class="text-center">Paid</th>
-			    	<th class="text-center" >Balance</th>
+			    	<th class="text-center" style="color:red">Date</th>
+			    	<th class="text-center" style="color:red">Journal</th>
+			    	<th class="text-center" style="color:red">Status</th>
+			    	<th class="text-center" style="color:red">Amount Currency</th>
+			    	<th class="text-center" style="color:red">Invoice Amount</th>
+			    	<th class="text-center" style="color:red">Paid</th>
+			    	<th class="text-center" style="color:red">Balance</th>
 			    </tr>
 		    	</thead>
 
