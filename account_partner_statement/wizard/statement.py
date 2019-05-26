@@ -41,9 +41,6 @@ class PartnerStatementWizard(models.TransientModel):
             return {'domain': {'partner_ids': [(self.partner_type, '=', True)]}}
 
 
-    def get_initial_payments(self, partner, data):
-        result = 100
-        return result
 
     def get_domain(self, domain):
         if self.partner_type == 'customer':domain += [('type', 'in', ('out_invoice', 'out_refund'))]
@@ -93,24 +90,27 @@ class PartnerStatementWizard(models.TransientModel):
                 ]
         if self.payment_date_to:domain.extend([('date', '<=', self.payment_date_to)])
 
+
+
         for payment in self.env['account.move.line'].search(domain + [('account_id', 'in', receivable_account_ids)], order='date').filtered(lambda l: l.journal_id.type not in ['sale','purchase']):
-            sign = self.partner_type == 'customer' and 1 or -1
+            amount = self.convert_rate(payment.amount_residual,payment.date,self.company_id.currency_id)
             info['content'] += [{
                 'name': payment.move_id.name,
                 'journal_name': payment.journal_id.name,
-                'amount': self.convert_rate(payment.credit,payment.date,self.company_id.currency_id) * sign,
+                'amount': amount,
                 'amount_currency': abs(payment.amount_currency),
                 'currency': payment.currency_id or False,
                 'date': payment.date,
                 'color': 'black',
             }]
 
+
         for payment in self.env['account.move.line'].search(domain + [('account_id', 'in', payable_account_ids)], order='date').filtered(lambda l: l.journal_id.type not in ['sale','purchase']):
-            sign = self.partner_type == 'customer' and -1 or 1
+            amount = self.convert_rate(payment.amount_residual,payment.date,self.company_id.currency_id)
             info['content'] += [{
                 'name': payment.move_id.name,
                 'journal_name': payment.journal_id.name,
-                'amount': self.convert_rate(payment.debit,payment.date,self.company_id.currency_id) * sign,
+                'amount': amount,
                 'amount_currency': abs(payment.amount_currency),
                 'currency': payment.currency_id or False,
                 'date': payment.date,
@@ -135,18 +135,22 @@ class PartnerStatementWizard(models.TransientModel):
             
             amount = 0
             amount_currency = 0
-            currency_id = payment.currency_id or False
+            currency_id = payment.currency_id or self.company_id.currency_id
             if self.partner_type == 'customer':
-                amount = payment.credit
-                amount_currency = abs(payment.amount_currency)
+#                amount = payment.credit
+                amount = sum([p.amount for p in payment.matched_debit_ids if p.debit_move_id in invoice.move_id.line_ids])
+                amount_currency = sum([p.amount_currency for p in payment.matched_debit_ids if p.debit_move_id in invoice.move_id.line_ids])
+
             elif self.partner_type == 'supplier':
-                amount = payment.debit
-                amount_currency = abs(payment.amount_currency)
+#                amount = payment.debit
+                amount = sum([p.amount for p in payment.matched_credit_ids if p.credit_move_id in invoice.move_id.line_ids])
+                amount_currency = sum([p.amount_currency for p in payment.matched_credit_ids if  p.credit_move_id in invoice.move_id.line_ids])
 
-            if invoice and payment.currency_id:
-                total_actual_paid += amount_currency
+            if invoice and payment.currency_id:total_actual_paid += amount_currency
+            else:total_actual_paid += amount
 
-
+            if not payment.currency_id and payment.amount_currency == 0:
+                amount_currency = amount
             amount = self.convert_rate(amount,payment.date,self.company_id.currency_id)
 
             info['content'] += [{
@@ -194,3 +198,4 @@ class PartnerStatementWizard(models.TransientModel):
 
      
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+

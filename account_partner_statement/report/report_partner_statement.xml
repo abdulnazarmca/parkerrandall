@@ -142,7 +142,7 @@
 				    	</table>
 				    </tr>
 
-                                    <t t-set="amount_payment_balance" t-value="amount_balance" /> 
+                                    <t t-set="amount_payment_balance" t-value="amount_payment_balance+amount_balance" /> 
 				</table>
 
 			    </tr>
@@ -167,10 +167,12 @@
 				        </tr>
 				    	<tr t-foreach="outstanding_payments" t-as="payment" >
 
-					    <t t-set="amount_payment_balance" t-value="amount_payment_balance-payment['amount']"/>
+					    <t t-set="amount_payment_balance" t-value="amount_payment_balance+payment['amount']"/>
+
 
                                             <t t-set="style" t-value="payment['color']" />
-                                            <t t-set="total_invoice_paid" t-value="total_invoice_paid+payment['amount']" />
+                                            <t t-set="total_invoice_paid" t-value="total_invoice_paid-payment['amount']" />
+
 
 				    	    <td class="text-center"></td>
 				    	    <td class="text-center" t-att-style="style" ><span t-esc="payment['name']" /></td>
