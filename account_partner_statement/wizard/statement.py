@@ -152,6 +152,8 @@ class PartnerStatementWizard(models.TransientModel):
             if not payment.currency_id and payment.amount_currency == 0:
                 amount_currency = amount
             amount = self.convert_rate(amount,payment.date,self.company_id.currency_id)
+            if payment.currency_id and payment.amount_currency != 0 and self.currency_id == payment.currency_id:
+                amount = payment.amount_currency
 
             info['content'] += [{
                 'name': payment.move_id.name,
