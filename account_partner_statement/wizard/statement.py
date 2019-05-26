@@ -170,7 +170,7 @@ class PartnerStatementWizard(models.TransientModel):
                 'name': "Auto Adjusted Exchange Gain/Loss (Only for report purpose)",
                 'journal_name': "Exchange Difference",
                 'amount': self.convert_rate(invoice.amount_total,invoice.date_invoice,invoice.currency_id) - total_paid,
-                'amount_currency': amount_currency,
+                'amount_currency': self.convert_rate(invoice.amount_total,invoice.date_invoice,invoice.currency_id) - total_paid,
                 'currency': currency_id,
                 'date': False,
                 'color': 'color:#ef0410',
