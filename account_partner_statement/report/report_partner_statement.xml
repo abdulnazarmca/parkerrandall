@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="partner_statement_report_view">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+		<t t-call="account_partner_statement.partner_statement_report"/>
+            </t>
+    	</t>
+    </template>
+
+    <template id="partner_statement_report">
+	<t t-foreach="o.partner_ids" t-as="partner">
+	    <t t-call="web.external_layout">
+		<div class="page">
+		    <center><h2 style="color:ff0000"><b><span t-field="o.partner_type"/> Statement</b></h2></center>
+
+		    <table style="border:1px solid black;width:100%">
+		    	<tbody>
+			    <tr style="background-color:#c0c0c0;">
+			    	<td  class="text-center"><span t-field="o.partner_type" /></td>
+			    	<td  class="text-center">Currency</td>
+			    	<td  class="text-center">Invoice Period</td>
+			    	<td  class="text-center">Upto Date of Payments</td>
+			    	<td  class="text-center">Company</td>
+			    </tr>
+			    <tr>
+			    	<td  class="text-center"><span t-esc="partner.name" /></td>
+			    	<td  class="text-center"><span t-if="o.currency_id" t-field="o.currency_id"/><span t-if="not o.currency_id" t-field="o.company_id.currency_id"/></td>
+			    	<td  class="text-center"><span t-if="o.date_from">From:</span><span t-field="o.date_from" /> <span t-if="o.date_to"> To:</span><span t-field="o.date_to" /> </td>
+			    	<td  class="text-center"><span t-if="o.payment_date_to">Upto:</span><span t-field="o.payment_date_to" /> </td>
+			    	<td  class="text-center"><span t-field="o.company_id.name" /></td>
+			    </tr>
+		    	</tbody>
+		    </table><br />
+		    <p><span t-field="o.note" /></p>
+
+                    <t t-set="amount_payment_balance" t-value="0" /> 
+		    <table style="border:1px solid black;width:100%">
+		    	<colgroup>
+		    	    <col width='5%'/>
+		    	    <col width='15%'/>
+		    	    <col width='15%'/>
+		    	    <col width='15%'/>
+		    	    <col width='10%'/>
+		    	    <col width='10%'/>
+		    	    <col width='10%'/>
+		    	    <col width='10%'/>
+		    	    <col width='10%'/>
+		    	</colgroup>
+		    	<thead>
+			    <tr style="border:1px solid black;width:100%;background-color:#0c7293;">
+			    	<th class="text-center" style="color:red">S.No</th>
+			    	<th class="text-center" style="color:red">Reference</th>
+			    	<th class="text-center" style="color:red">Date</th>
+			    	<th class="text-center" style="color:red">Journal</th>
+			    	<th class="text-center" style="color:red">Status</th>
+			    	<th class="text-center" style="color:red">Amount Currency</th>
+			    	<th class="text-center" style="color:red">Invoice Amount</th>
+			    	<th class="text-center" style="color:red">Paid</th>
+			    	<th class="text-center" style="color:red">Balance</th>
+			    </tr>
+		    	</thead>
+
+		    	<tbody>
+
+			    <t t-set="serial" t-value="0" /> 
+			    <t t-set="total_invoice_amount" t-value="0" /> 
+			    <t t-set="total_invoice_paid" t-value="0" /> 
+                            <t t-if='o.currency_id' t-set="currency" t-value="o.currency_id"/>
+                            <t t-if='not o.currency_id' t-set="currency" t-value="o.company_id.currency_id"/>
+
+			    <tr t-foreach="o.get_invoice(partner)" t-as="invoice" style="width:100%">
+				<t t-set="serial" t-value="serial+1"/>
+
+				<table style="border:1px solid black;width:100%">
+			    	    <colgroup>
+		            	        <col width='5%'/>
+		            	        <col width='15%'/>
+		            	        <col width='15%'/>
+		            	        <col width='15%'/>
+		            	        <col width='10%'/>
+		            	        <col width='10%'/>
+		            	        <col width='10%'/>
+		            	        <col width='10%'/>
+		            	        <col width='10%'/>
+			    	    </colgroup>
+
+
+                                    <t t-set="invoice_payments" t-value="o.get_invoice_payments(invoice.payment_move_line_ids, invoice)"/>
+
+
+			            <t t-set="invoice_amount" t-value="o.convert_rate(invoice.amount_total,invoice.date_invoice,invoice.currency_id)" /> 
+
+			            <t t-set="amount_balance" t-value="invoice_amount" /> 
+                                    <t t-set="total_invoice_amount" t-value="total_invoice_amount+invoice_amount"/>
+                                    <t t-set="total_invoice_paid" t-value="total_invoice_paid+invoice_payments[1]"/>
+
+ 				    <tr style="border-bottom:1pt solid black;color:#0000ff">
+				    	<td class="text-center"><span t-esc="serial" /></td>
+				    	<td class="text-center"><span t-field="invoice.number" /></td>
+				    	<td class="text-center"><span t-field="invoice.date_invoice" /></td>
+				    	<td class="text-center"><span t-field="invoice.journal_id" /></td>
+				    	<td class="text-center"><span t-esc="invoice_payments[2]" /></td>
+				    	<td class="text-right"><span t-field="invoice.amount_total" /></td>
+				    	<td class="text-right"><span t-esc="invoice_amount" t-options='{"widget": "monetary", "display_currency": currency}'/></td>
+				    	<td class="text-right"><span t-esc="invoice_payments[1]" t-options='{"widget": "monetary", "display_currency": currency}'/></td>
+				    	<td class="text-right"><span t-esc="o.convert_rate(invoice.amount_total,invoice.date_invoice,invoice.currency_id) - invoice_payments[1]" t-options='{"widget": "monetary", "display_currency": currency}'/></td>
+			
+				    </tr>
+
+
+
+				    <tr>
+				    	<table style="border:1px solid black;width:100%">
+			    	    	    <colgroup>
+		                    	        <col width='5%'/>
+		                    	        <col width='15%'/>
+		                    	        <col width='15%'/>
+		                    	        <col width='15%'/>
+		                    	        <col width='10%'/>
+		                    	        <col width='10%'/>
+		                    	        <col width='10%'/>
+		                    	        <col width='10%'/>
+		                    	        <col width='10%'/>
+			    	    	    </colgroup>
+				    	    <tbody>
+					    	<tr t-foreach="invoice_payments[0]" t-as="move_line" >
+						    <t t-set="amount_balance" t-value="amount_balance-move_line['amount']"/>
+                                                    <t t-set="style" t-value="move_line['color']" />
+
+					    	    <td class="text-center"></td>
+					    	    <td class="text-center" t-att-style="style" ><span t-esc="move_line['name']" /></td>
+					    	    <td class="text-center" t-att-style="style"><span t-esc="move_line['date']" t-options="{'widget': 'date'}"/></td>
+					    	    <td class="text-center" t-att-style="style"><span t-esc="move_line['journal_name']" /></td>
+					    	    <td class="text-center"></td>
+					    	    <td class="text-right" t-att-style="style"><span t-if="move_line['amount_currency'] != 0" t-esc="move_line['amount_currency']" t-options='{"widget": "monetary", "display_currency": move_line["currency"]}'/></td>
+					    	    <td class="text-right"></td>
+					    	    <td class="text-right" t-att-style="style"><span t-esc="move_line['amount']" t-options='{"widget": "monetary", "display_currency": currency}'/></td>
+					    	    <td class="text-right" t-att-style="style"><span t-esc="amount_balance" t-options='{"widget": "monetary", "display_currency": currency}'/></td>
+					    	</tr>
+				    	    </tbody>
+				    	</table>
+				    </tr>
+
+                                    <t t-set="amount_payment_balance" t-value="amount_payment_balance+amount_balance" /> 
+				</table>
+
+			    </tr>
+
+                            <t t-set="outstanding_payments" t-value="o.get_outstanding_payments(partner)"/>
+			    <tr t-if="outstanding_payments" style="width:100%" >
+				<table style="border:1px solid black;width:100%">
+		    	    	    <colgroup>
+	                    	        <col width='5%'/>
+	                    	        <col width='15%'/>
+	                    	        <col width='15%'/>
+	                    	        <col width='15%'/>
+	                    	        <col width='10%'/>
+	                    	        <col width='10%'/>
+	                    	        <col width='10%'/>
+	                    	        <col width='10%'/>
+	                    	        <col width='10%'/>
+		    	    	    </colgroup>
+                                    <tbody>
+				        <tr style="width:100%;background-color:#0c7293;">
+					    <th colspan="9"><b>Outstanding Payments</b></th>
+				        </tr>
+				    	<tr t-foreach="outstanding_payments" t-as="payment" >
+
+					    <t t-set="amount_payment_balance" t-value="amount_payment_balance+payment['amount']"/>
+
+
+                                            <t t-set="style" t-value="payment['color']" />
+                                            <t t-set="total_invoice_paid" t-value="total_invoice_paid-payment['amount']" />
+
+
+				    	    <td class="text-center"></td>
+				    	    <td class="text-center" t-att-style="style" ><span t-esc="payment['name']" /></td>
+				    	    <td class="text-center" t-att-style="style"><span t-esc="payment['date']" t-options="{'widget': 'date'}"/></td>
+				    	    <td class="text-center" t-att-style="style"><span t-esc="payment['journal_name']" /></td>
+				    	    <td class="text-center"></td>
+				    	    <td class="text-right" t-att-style="style"><span t-if="payment['amount_currency'] != 0" t-esc="payment['amount_currency']" t-options='{"widget": "monetary", "display_currency": payment["currency"]}'/></td>
+				    	    <td class="text-right"></td>
+				    	    <td class="text-right" t-att-style="style"><span t-esc="payment['amount']" t-options='{"widget": "monetary", "display_currency": currency}'/></td>
+				    	    <td class="text-right" t-att-style="style"><span t-esc="amount_payment_balance" t-options='{"widget": "monetary", "display_currency": currency}'/></td>
+                                            
+				    	</tr>
+                                    </tbody>
+				</table>
+			    </tr>
+
+
+			    <tr style="width:100%">
+				<table style="border:1px solid black;width:100%">
+		    	    	    <colgroup>
+	                    	        <col width='70%'/>
+	                    	        <col width='10%'/>
+	                    	        <col width='10%'/>
+	                    	        <col width='10%'/>
+		    	    	    </colgroup>
+				    <tr style="width:100%;background-color:#ebebe0;">
+					<td><b>Total</b></td>
+					<td class="text-right" style="color:ff0000" ><b><span t-esc="total_invoice_amount" t-options='{"widget": "monetary", "display_currency": currency}'/></b></td>
+					<td class="text-right" style="color:ff0000" ><b><span t-esc="total_invoice_paid" t-options='{"widget": "monetary", "display_currency": currency}'/></b></td>
+					<td class="text-right" style="color:ff0000" ><b><span t-esc="total_invoice_amount-total_invoice_paid" t-options='{"widget": "monetary", "display_currency": currency}'/></b></td>
+				    </tr>
+				</table>
+			    </tr>
+
+		    	</tbody>
+
+		    </table>
+
+		</div>
+	    </t>
+	</t>
+    </template>
+</odoo>
