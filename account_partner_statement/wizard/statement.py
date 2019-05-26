@@ -165,12 +165,12 @@ class PartnerStatementWizard(models.TransientModel):
             total_paid += amount
 
         if invoice and invoice.amount_total == total_actual_paid and self.convert_rate(invoice.amount_total,invoice.date_invoice,invoice.currency_id) != total_paid:
-
+            adjust_amount = self.convert_rate(invoice.amount_total,invoice.date_invoice,invoice.currency_id) - total_paid
             info['content'] += [{
                 'name': "Auto Adjusted Exchange Gain/Loss (Only for report purpose)",
                 'journal_name': "Exchange Difference",
-                'amount': self.convert_rate(invoice.amount_total,invoice.date_invoice,invoice.currency_id) - total_paid,
-                'amount_currency': self.convert_rate(invoice.amount_total,invoice.date_invoice,invoice.currency_id) - total_paid,
+                'amount': adjust_amount,
+                'amount_currency': adjust_amount,
                 'currency': currency_id,
                 'date': False,
                 'color': 'color:#ef0410',
@@ -198,4 +198,3 @@ class PartnerStatementWizard(models.TransientModel):
 
      
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-
