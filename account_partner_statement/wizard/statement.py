@@ -42,22 +42,27 @@ class PartnerStatementWizard(models.TransientModel):
 
 
 
-    def get_domain(self, domain):
-        if self.partner_type == 'customer':domain += [('type', 'in', ('out_invoice', 'out_refund'))]
-        else:domain += [('type', 'in', ('in_invoice', 'in_refund'))]
+    def get_domain(self, domain, inv_type):
+        if self.partner_type == 'customer':
+            if inv_type == 'refund':domain += [('type', '=', 'out_refund')]
+            else:domain += [('type', '=', 'out_invoice')]
+        else:
+            if inv_type == 'refund':domain += [('type', '=', 'in_refund')]
+            else:domain += [('type', '=', 'in_invoice')]
         if self.date_from:domain += [('date_invoice', '>=', self.date_from)]
         if self.date_to:domain += [('date_invoice', '<=', self.date_to)]
         return domain
 
-    def get_invoice(self, partner):
+    def get_invoice(self, partner, inv_type):
         invoice_obj = self.env['account.invoice']
         domain = [('partner_id', '=', partner.id), ('state', 'not in', ['draft', 'cancel']), ('company_id','=',self.company_id.id)]
-        domain += self.get_domain(domain)
+        domain += self.get_domain(domain, inv_type)
         invoice_ids = invoice_obj.search(domain, order='date_invoice')
         return sorted(invoice_ids, key=lambda x: x.id, reverse=False)
 
-    def convert_rate(self, amount, date, from_currency):
-        to_currency = self.company_id.currency_id
+    def convert_rate(self, amount, date, from_currency, to_currency=None):
+        if not to_currency:to_currency = self.company_id.currency_id
+        
         if self.currency_id:to_currency = self.currency_id
         amount = from_currency._convert(amount, to_currency, self.company_id, date or fields.Date.today())
         return amount
@@ -91,30 +96,44 @@ class PartnerStatementWizard(models.TransientModel):
         if self.payment_date_to:domain.extend([('date', '<=', self.payment_date_to)])
 
 
-
+        amount_currency = 0
         for payment in self.env['account.move.line'].search(domain + [('account_id', 'in', receivable_account_ids)], order='date').filtered(lambda l: l.journal_id.type not in ['sale','purchase']):
             amount = self.convert_rate(payment.amount_residual,payment.date,self.company_id.currency_id)
+            currency_id = payment.currency_id or self.company_id.currency_id
+
+            if payment.currency_id and payment.amount_currency != 0:
+                amount_currency = abs(self.convert_rate(payment.amount_residual,payment.date,self.company_id.currency_id, payment.currency_id))
+            else:amount_currency = abs(payment.amount_residual)
+                
+
             info['content'] += [{
                 'name': payment.move_id.name,
                 'journal_name': payment.journal_id.name,
                 'amount': amount,
-                'amount_currency': abs(payment.amount_currency),
-                'currency': payment.currency_id or False,
+                'amount_currency': amount_currency,
+                'currency': currency_id,
                 'date': payment.date,
-                'color': 'black',
+                'color': 'color:black',
             }]
 
 
         for payment in self.env['account.move.line'].search(domain + [('account_id', 'in', payable_account_ids)], order='date').filtered(lambda l: l.journal_id.type not in ['sale','purchase']):
             amount = self.convert_rate(payment.amount_residual,payment.date,self.company_id.currency_id)
+            currency_id = payment.currency_id or self.company_id.currency_id
+
+            if payment.currency_id and payment.amount_currency != 0:
+                amount_currency = abs(self.convert_rate(payment.amount_residual,payment.date,self.company_id.currency_id, payment.currency_id))
+            else:amount_currency = abs(payment.amount_residual)
+                
+
             info['content'] += [{
                 'name': payment.move_id.name,
                 'journal_name': payment.journal_id.name,
                 'amount': amount,
-                'amount_currency': abs(payment.amount_currency),
-                'currency': payment.currency_id or False,
+                'amount_currency': amount_currency,
+                'currency': currency_id,
                 'date': payment.date,
-                'color': 'black',
+                'color': 'color:black',
             }]
 
 
@@ -136,15 +155,16 @@ class PartnerStatementWizard(models.TransientModel):
             amount = 0
             amount_currency = 0
             currency_id = payment.currency_id or self.company_id.currency_id
-            if self.partner_type == 'customer':
-#                amount = payment.credit
+
+
+            if invoice.type in ('out_invoice', 'in_refund'):
                 amount = sum([p.amount for p in payment.matched_debit_ids if p.debit_move_id in invoice.move_id.line_ids])
                 amount_currency = sum([p.amount_currency for p in payment.matched_debit_ids if p.debit_move_id in invoice.move_id.line_ids])
 
-            elif self.partner_type == 'supplier':
-#                amount = payment.debit
+            elif invoice.type in ('in_invoice', 'out_refund'):
                 amount = sum([p.amount for p in payment.matched_credit_ids if p.credit_move_id in invoice.move_id.line_ids])
-                amount_currency = sum([p.amount_currency for p in payment.matched_credit_ids if  p.credit_move_id in invoice.move_id.line_ids])
+                amount_currency = sum([p.amount_currency for p in payment.matched_credit_ids if p.credit_move_id in invoice.move_id.line_ids])
+
 
             if invoice and payment.currency_id:total_actual_paid += amount_currency
             else:total_actual_paid += amount
@@ -162,7 +182,7 @@ class PartnerStatementWizard(models.TransientModel):
                 'amount_currency': amount_currency,
                 'currency': currency_id,
                 'date': payment.date,
-                'color': 'black',
+                'color': 'color:black',
             }]
             total_paid += amount
 
@@ -200,3 +220,4 @@ class PartnerStatementWizard(models.TransientModel):
 
      
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+
