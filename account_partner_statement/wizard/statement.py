@@ -97,7 +97,9 @@ class PartnerStatementWizard(models.TransientModel):
 
 
         amount_currency = 0
-        for payment in self.env['account.move.line'].search(domain + [('account_id', 'in', receivable_account_ids)], order='date').filtered(lambda l: l.journal_id.type not in ['sale','purchase']):
+        if self.partner_type == 'customer':account_ids = receivable_account_ids
+        else:account_ids = payable_account_ids
+        for payment in self.env['account.move.line'].search(domain + [('account_id', 'in', account_ids)], order='date').filtered(lambda l: l.journal_id.type not in ['sale','purchase']):
             amount = self.convert_rate(payment.amount_residual,payment.date,self.company_id.currency_id)
             currency_id = payment.currency_id or self.company_id.currency_id
 
@@ -115,27 +117,6 @@ class PartnerStatementWizard(models.TransientModel):
                 'date': payment.date,
                 'color': 'color:black',
             }]
-
-
-        for payment in self.env['account.move.line'].search(domain + [('account_id', 'in', payable_account_ids)], order='date').filtered(lambda l: l.journal_id.type not in ['sale','purchase']):
-            amount = self.convert_rate(payment.amount_residual,payment.date,self.company_id.currency_id)
-            currency_id = payment.currency_id or self.company_id.currency_id
-
-            if payment.currency_id and payment.amount_currency != 0:
-                amount_currency = abs(self.convert_rate(payment.amount_residual,payment.date,self.company_id.currency_id, payment.currency_id))
-            else:amount_currency = abs(payment.amount_residual)
-                
-
-            info['content'] += [{
-                'name': payment.move_id.name,
-                'journal_name': payment.journal_id.name,
-                'amount': amount,
-                'amount_currency': amount_currency,
-                'currency': currency_id,
-                'date': payment.date,
-                'color': 'color:black',
-            }]
-
 
         payments_lines = info['content']
         return payments_lines
